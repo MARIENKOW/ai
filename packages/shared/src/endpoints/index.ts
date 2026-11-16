@@ -146,6 +146,9 @@ export const ENDPOINT = {
             upload: { path: "upload" },
         },
     },
+    generation: {
+        path: "generation",
+    },
     resetPasswordToken: {
         path: "reset-password-token",
         user: {

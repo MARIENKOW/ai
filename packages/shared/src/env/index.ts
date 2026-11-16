@@ -25,6 +25,11 @@ export const serverEnvSchema = z
             .enum(["postgresql", "mysql", "sqlite"])
             .default("postgresql"),
 
+        // Redis (BullMQ)
+        REDIS_HOST: z.string().min(1),
+        REDIS_PORT: z.coerce.number().int().positive().default(6379),
+        REDIS_PASSWORD: z.string().min(16),
+
         // SMTP
         SMTP_HOST: z.string().min(1),
         SMTP_PORT: z.coerce.number().int().positive(),

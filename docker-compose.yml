@@ -37,6 +37,9 @@ services:
             POSTGRES_PASSWORD: ${DB_PASSWORD}
             POSTGRES_DB: ${DB_DATABASE}
             PGPORT: ${DB_PORT:-5432}
+        # Порт открыт только на 127.0.0.1 — для pnpm dev с хоста; снаружи не виден
+        ports:
+            - "127.0.0.1:${DB_PORT:-5432}:${DB_PORT:-5432}"
         volumes:
             - pgdata:/var/lib/postgresql/data
         networks:
@@ -47,6 +50,31 @@ services:
             timeout: 5s
             retries: 5
             start_period: 30s
+
+    # ── Redis 7 (очередь BullMQ) ───────────────────────────────────────────────
+    # noeviction — обязательно для BullMQ (Redis не должен выкидывать задачи из памяти)
+    # Порт открыт только на 127.0.0.1 — для pnpm dev с хоста; снаружи не виден
+    redis:
+        image: redis:7-alpine
+        restart: unless-stopped
+        command: >
+            redis-server
+            --requirepass ${REDIS_PASSWORD}
+            --appendonly yes
+            --maxmemory-policy noeviction
+        environment:
+            REDIS_PASSWORD: ${REDIS_PASSWORD}
+        ports:
+            - "127.0.0.1:${REDIS_PORT:-6379}:6379"
+        volumes:
+            - redisdata:/data
+        networks:
+            - app-network
+        healthcheck:
+            test: ["CMD-SHELL", "redis-cli -a \"$${REDIS_PASSWORD}\" --no-auth-warning ping | grep PONG"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
 
     # ── NestJS API ─────────────────────────────────────────────────────────────
     api:
@@ -183,6 +211,7 @@ networks:
 
 volumes:
     pgdata:
+    redisdata:
     uptime-kuma-data:
     certbot-certs:
     certbot-webroot:

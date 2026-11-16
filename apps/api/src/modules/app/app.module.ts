@@ -18,6 +18,8 @@ import { FileModule } from "@/infrastructure/file/file.module";
 import { AdminInvitationModule } from "@/modules/admin/invitation/adminInvitation.module";
 import { AdminManagementModule } from "@/modules/admin/management/adminManagement.module";
 import { UserManagementModule } from "@/modules/admin/userManagement/userManagement.module";
+import { QueueModule } from "@/infrastructure/queue/queue.module";
+import { GenerationModule } from "@/modules/generation/generation.module";
 @Module({
     imports: [
         CoreModule,
@@ -33,6 +35,8 @@ import { UserManagementModule } from "@/modules/admin/userManagement/userManagem
         BlogImageModule,
         BlogVideoModule,
         BlogModule,
+        QueueModule,
+        GenerationModule,
         I18nModule.forRoot({
             loaderOptions: {},
             fallbackLanguage: defaultLanguage,
