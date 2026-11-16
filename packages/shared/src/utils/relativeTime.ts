@@ -1,10 +1,10 @@
 import { formatDistanceToNow } from "date-fns";
 import type { Locale } from "date-fns";
-import { enUS, uk } from "date-fns/locale";
+import { enUS, ru } from "date-fns/locale";
 import { AvailableLanguage } from "../i18n";
 
 export const DATE_FNS_LOCALES: Record<AvailableLanguage, Locale> = {
-    ua: uk,
+    ru,
     en: enUS,
 };
 

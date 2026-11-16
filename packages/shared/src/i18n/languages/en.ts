@@ -1,4 +1,4 @@
-import { MessageStructure } from "./ua";
+import { MessageStructure } from "./ru";
 import {
     CHANGE_PASSWORD_OTP_LENGTH,
     EMAIL_MAX_LENGTH,
