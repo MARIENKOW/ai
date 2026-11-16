@@ -1,14 +1,12 @@
-import { ActorType } from "@/modules/auth/auth.type";
 import { GENERATION_JOB } from "@/modules/generation/generation.config";
 import { Job, Queue } from "bullmq";
 
 export type GenerationJobName =
     (typeof GENERATION_JOB)[keyof typeof GENERATION_JOB];
 
-/** Данные задачи. Владелец нужен, чтобы чужой актор не мог читать статус по id */
+/** Данные задачи. Владелец нужен, чтобы другой админ не мог читать статус по id */
 export interface GenerationJobData {
-    ownerType: ActorType;
-    ownerId: string;
+    adminId: string;
 }
 
 /** Результат задачи. Пока заглушка — заменится данными сгенерированного изображения */

@@ -132,6 +132,7 @@ export const ua = {
         },
         admin: {
             name: "Головна",
+            placeholder: "Тут незабаром з'явиться генерація",
             blog: {
                 create: {
                     name: "Створити",

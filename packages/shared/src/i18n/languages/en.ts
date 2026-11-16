@@ -132,6 +132,7 @@ export const en: MessageStructure = {
         },
         admin: {
             name: "Home",
+            placeholder: "Generation will appear here soon",
             blog: {
                 create: {
                     name: "Create",

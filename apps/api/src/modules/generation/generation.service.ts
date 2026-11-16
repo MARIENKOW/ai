@@ -1,12 +1,9 @@
 import { QUEUE } from "@/infrastructure/queue/queue.config";
 import { isRedisConnectionError } from "@/infrastructure/queue/queue.utils";
-import { Actor, isUserActor } from "@/modules/auth/auth.type";
+import { AdminActor } from "@/modules/auth/auth.type";
 import { GENERATION_JOB } from "@/modules/generation/generation.config";
 import { mapGenerationJob } from "@/modules/generation/generation.mapper";
-import {
-    GenerationJobData,
-    GenerationQueue,
-} from "@/modules/generation/generation.types";
+import { GenerationQueue } from "@/modules/generation/generation.types";
 import { GenerationJobDto } from "@myorg/shared/dto";
 import { InjectQueue } from "@nestjs/bullmq";
 import {
@@ -33,36 +30,23 @@ export class GenerationService implements OnModuleInit {
         });
     }
 
-    // ── helpers ──────────────────────────────────────────────────────
-
-    private toOwner(actor: Actor): GenerationJobData {
-        return isUserActor(actor)
-            ? { ownerType: "USER", ownerId: actor.user.id }
-            : { ownerType: "ADMIN", ownerId: actor.admin.id };
-    }
-
     // ── API ──────────────────────────────────────────────────────────
 
-    async create(actor: Actor): Promise<GenerationJobDto> {
+    async create(actor: AdminActor): Promise<GenerationJobDto> {
         // jobId = UUID, а не автоинкремент BullMQ: id нельзя угадать перебором
         const job = await this.queue.add(
             GENERATION_JOB.GENERATE,
-            this.toOwner(actor),
+            { adminId: actor.admin.id },
             { jobId: randomUUID() },
         );
         return mapGenerationJob(job, "waiting");
     }
 
-    async get(actor: Actor, id: string): Promise<GenerationJobDto> {
+    async get(actor: AdminActor, id: string): Promise<GenerationJobDto> {
         const job = await this.queue.getJob(id);
-        const owner = this.toOwner(actor);
 
         // Чужая задача отдаёт тот же 404, что и несуществующая — не раскрываем, что id есть
-        if (
-            !job ||
-            job.data.ownerType !== owner.ownerType ||
-            job.data.ownerId !== owner.ownerId
-        )
+        if (!job || job.data.adminId !== actor.admin.id)
             throw new NotFoundException();
 
         return mapGenerationJob(job, await job.getState());

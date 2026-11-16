@@ -1,4 +1,4 @@
-import { Actor } from "@/modules/auth/auth.type";
+import { AdminActor } from "@/modules/auth/auth.type";
 import { Auth, CurrentActor } from "@/modules/auth/decorators/auth.decorator";
 import { GenerationService } from "@/modules/generation/generation.service";
 import { GenerationJobDto } from "@myorg/shared/dto";
@@ -12,15 +12,15 @@ export class GenerationController {
     constructor(private generation: GenerationService) {}
 
     @Post()
-    @Auth("USER", "ADMIN")
-    async create(@CurrentActor() actor: Actor): Promise<GenerationJobDto> {
+    @Auth("ADMIN")
+    async create(@CurrentActor() actor: AdminActor): Promise<GenerationJobDto> {
         return this.generation.create(actor);
     }
 
     @Get(":id")
-    @Auth("USER", "ADMIN")
+    @Auth("ADMIN")
     async get(
-        @CurrentActor() actor: Actor,
+        @CurrentActor() actor: AdminActor,
         @Param("id", ParseUUIDPipe) id: string,
     ): Promise<GenerationJobDto> {
         return this.generation.get(actor, id);
